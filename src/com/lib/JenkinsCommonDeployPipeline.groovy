@@ -73,7 +73,7 @@ def runPipeline() {
       groovyScript:  String.format(findDockerImageScript, deployment) , multiSelectDelimiter: ',', 
       name: 'selectedDockerImage', quoteValue: false, 
       saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
-      visibleItemCount: 5)
+      visibleItemCount: 5),
 
       text(name: 'deployment_tfvars', 
       defaultValue: 'extra_values = "tools"', 
