@@ -33,7 +33,6 @@ def findDockerImages(branchName) {
   return versionList.sort()
 }
 
-println(findDockerImages('dev'))
-
+return findDockerImages('dev')
 
 

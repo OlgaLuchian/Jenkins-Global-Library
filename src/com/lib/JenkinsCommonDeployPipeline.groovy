@@ -14,6 +14,25 @@ def runPipeline() {
                         .replace('-fuchicorp', '')
                         .replace('-build', '')
                         .replace('-deploy', '')
+  def findDockerImageScript = '''
+  import groovy.json.JsonSlurper
+  def findDockerImages(branchName) {
+  def versionList = []
+  def token       = ""
+  def myJsonreader = new JsonSlurper()
+  def nexusData = myJsonreader.parse(new URL("https://nexus.fuchicorp.com/service/rest/v1/components?repository=fuchicorp"))
+  nexusData.items.each { if (it.name.contains(branchName)) { versionList.add(it.name + ":" + it.version) } }
+  while (true) {
+      if (nexusData.continuationToken) {
+      token = nexusData.continuationToken
+      nexusData = myJsonreader.parse(new URL("https://nexus.fuchicorp.com/service/rest/v1/components?repository=fuchicorp&continuationToken=${token}"))
+      nexusData.items.each { if (it.name.contains(branchName)) { versionList.add(it.name + ":" + it.version) } }
+      }
+      if (nexusData.continuationToken == null ) { break } }
+  if(!versionList) { versionList.add("ImmageNotFound") } 
+  return versionList.reverse(true) }
+  findDockerImages('%s')
+  '''
 
   switch(branch) {
     case 'master': environment = 'prod'
@@ -39,10 +58,27 @@ def runPipeline() {
   try {
     properties([ parameters([
       // This hard coded params should be configured inside code
-      booleanParam(defaultValue: false, description: 'Apply All Changes', name: 'terraform_apply'),
-      booleanParam(defaultValue: false, description: 'Destroy deployment', name: 'terraform_destroy'),
-      choice(name: 'selectedDockerImage', choices: common_docker.findDockerImages(deploymentName + '-' + environment), description: 'Please select docker image to deploy!'),
-      text(name: 'deployment_tfvars', defaultValue: 'extra_values = "tools"', description: 'terraform configuration')
+      booleanParam(defaultValue: false, 
+      description: 'Apply All Changes', 
+      name: 'terraform_apply'),
+
+
+      booleanParam(defaultValue: false, 
+      description: 'Destroy deployment', 
+      name: 'terraform_destroy'),
+
+
+      extendedChoice(bindings: '', description: 'Please select docker image to deploy', 
+      descriptionPropertyValue: '', groovyClasspath: '', 
+      groovyScript:  String.format(findDockerImageScript, deployment) , multiSelectDelimiter: ',', 
+      name: 'selectedDockerImage', quoteValue: false, 
+      saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
+      visibleItemCount: 5)
+
+      text(name: 'deployment_tfvars', 
+      defaultValue: 'extra_values = "tools"', 
+      description: 'terraform configuration')
+
       ]
       )])
 
