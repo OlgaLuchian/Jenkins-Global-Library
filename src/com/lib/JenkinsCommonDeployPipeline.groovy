@@ -70,7 +70,7 @@ def runPipeline() {
 
       extendedChoice(bindings: '', description: 'Please select docker image to deploy', 
       descriptionPropertyValue: '', groovyClasspath: '', 
-      groovyScript:  String.format(findDockerImageScript, deployment) , multiSelectDelimiter: ',', 
+      groovyScript:  String.format(findDockerImageScript, deploymentName) , multiSelectDelimiter: ',', 
       name: 'selectedDockerImage', quoteValue: false, 
       saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
       visibleItemCount: 5),
