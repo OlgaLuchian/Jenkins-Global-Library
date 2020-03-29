@@ -1,8 +1,14 @@
 #!/usr/bin/env groovy
 package com.lib
 import groovy.json.JsonSlurper
+import static groovy.json.JsonOutput.*
 import hudson.FilePath
 
+// Getting userid https://stackoverflow.com/questions/35902664/get-username-logged-in-jenkins-from-jenkins-workflow-pipeline-plugin
+@NonCPS
+def getBuildUser() {
+        return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+    }
 
 def runPipeline() {
   def common_docker = new JenkinsDeployerPipeline()
@@ -120,6 +126,16 @@ def runPipeline() {
 
   podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate) {
       node(k8slabel) {
+
+        stage("Deployment Info") {
+          println(prettyPrint(toJson([
+            "Environment" : environment,
+            "Deployment" : deploymentName,
+            "Builder" : getBuildUser()
+            "Build": env.BUILD_NUMBER
+          ])))
+        }
+
         container('fuchicorptools') {
 
           stage("Polling SCM") {
