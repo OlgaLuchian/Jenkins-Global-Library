@@ -54,9 +54,9 @@ def runPipeline() {
       saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
       visibleItemCount: 5),
 
-      choice(name: 'selectedDockerImage', 
-      choices: ['dev', 'qa', 'prod'], 
-      description: 'Please select docker image to deploy!'),
+      choice(name: 'environment', 
+      choices: ['dev', 'qa', 'test', 'prod'], 
+      description: 'Please select the environment to deploy'),
 
       text(name: 'deployment_tfvars', 
       defaultValue: 'extra_values = "tools"', 
