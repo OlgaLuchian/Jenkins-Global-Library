@@ -34,27 +34,6 @@ def runPipeline() {
   findDockerImages('%s')
   '''
 
-  switch(branch) {
-    case 'master': environment = 'prod'
-    break
-
-    case 'qa': environment = 'qa'
-    break
-
-    case 'dev': environment = 'dev'
-    break
-
-    case 'tools': environment = 'tools'
-    break
-
-    default:
-        environment = 'test'
-        print('This deployment will got to test environment')
-  }
-
-  println("Branch: ${branch}")
-  println("Environment: ${environment}")
-
   try {
     properties([ parameters([
       // This hard coded params should be configured inside code
@@ -74,6 +53,10 @@ def runPipeline() {
       name: 'selectedDockerImage', quoteValue: false, 
       saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
       visibleItemCount: 5),
+
+      choice(name: 'selectedDockerImage', 
+      choices: ['dev', 'qa', 'prod'], 
+      description: 'Please select docker image to deploy!'),
 
       text(name: 'deployment_tfvars', 
       defaultValue: 'extra_values = "tools"', 
