@@ -1,12 +1,17 @@
 #!/usr/bin/env groovy
 package com.lib
 import groovy.json.JsonSlurper
+import static groovy.json.JsonOutput.*
 import hudson.FilePath
 
+// Getting userid https://stackoverflow.com/questions/35902664/get-username-logged-in-jenkins-from-jenkins-workflow-pipeline-plugin
+@NonCPS
+def getBuildUser() {
+        return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+    }
 
 def runPipeline() {
   def common_docker = new JenkinsDeployerPipeline()
-  def environment = ""
   def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
   def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def deploymentName = "${JOB_NAME}"
@@ -14,35 +19,54 @@ def runPipeline() {
                         .replace('-fuchicorp', '')
                         .replace('-build', '')
                         .replace('-deploy', '')
-
-  switch(branch) {
-    case 'master': environment = 'prod'
-    break
-
-    case 'qa': environment = 'qa'
-    break
-
-    case 'dev': environment = 'dev'
-    break
-
-    case 'tools': environment = 'tools'
-    break
-
-    default:
-        environment = 'test'
-        print('This deployment will got to test environment')
-  }
-
-  println("Branch: ${branch}")
-  println("Environment: ${environment}")
+  def findDockerImageScript = '''
+  import groovy.json.JsonSlurper
+  def findDockerImages(branchName) {
+  def versionList = []
+  def token       = ""
+  def myJsonreader = new JsonSlurper()
+  def nexusData = myJsonreader.parse(new URL("https://nexus.fuchicorp.com/service/rest/v1/components?repository=fuchicorp"))
+  nexusData.items.each { if (it.name.contains(branchName)) { versionList.add(it.name + ":" + it.version) } }
+  while (true) {
+      if (nexusData.continuationToken) {
+      token = nexusData.continuationToken
+      nexusData = myJsonreader.parse(new URL("https://nexus.fuchicorp.com/service/rest/v1/components?repository=fuchicorp&continuationToken=${token}"))
+      nexusData.items.each { if (it.name.contains(branchName)) { versionList.add(it.name + ":" + it.version) } }
+      }
+      if (nexusData.continuationToken == null ) { break } }
+  if(!versionList) { versionList.add("ImmageNotFound") } 
+  return versionList.reverse(true) }
+  findDockerImages('%s')
+  '''
 
   try {
     properties([ parameters([
       // This hard coded params should be configured inside code
-      booleanParam(defaultValue: false, description: 'Apply All Changes', name: 'terraform_apply'),
-      booleanParam(defaultValue: false, description: 'Destroy deployment', name: 'terraform_destroy'),
-      choice(name: 'selectedDockerImage', choices: common_docker.findDockerImages(deploymentName + '-' + environment), description: 'Please select docker image to deploy!'),
-      text(name: 'deployment_tfvars', defaultValue: 'extra_values = "tools"', description: 'terraform configuration')
+      booleanParam(defaultValue: false, 
+      description: 'Apply All Changes', 
+      name: 'terraform_apply'),
+
+
+      booleanParam(defaultValue: false, 
+      description: 'Destroy deployment', 
+      name: 'terraform_destroy'),
+
+
+      extendedChoice(bindings: '', description: 'Please select docker image to deploy', 
+      descriptionPropertyValue: '', groovyClasspath: '', 
+      groovyScript:  String.format(findDockerImageScript, deploymentName) , multiSelectDelimiter: ',', 
+      name: 'selectedDockerImage', quoteValue: false, 
+      saveJSONParameterToFile: false, type: 'PT_SINGLE_SELECT', 
+      visibleItemCount: 5),
+
+      choice(name: 'environment', 
+      choices: ['dev', 'qa', 'test', 'prod'], 
+      description: 'Please select the environment to deploy'),
+
+      text(name: 'deployment_tfvars', 
+      defaultValue: 'extra_values = "tools"', 
+      description: 'terraform configuration')
+
       ]
       )])
 
@@ -102,6 +126,16 @@ def runPipeline() {
 
   podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate) {
       node(k8slabel) {
+
+        stage("Deployment Info") {
+          println(prettyPrint(toJson([
+            "Environment" : environment,
+            "Deployment" : deploymentName,
+            "Builder" : getBuildUser(),
+            "Build": env.BUILD_NUMBER
+          ])))
+        }
+
         container('fuchicorptools') {
 
           stage("Polling SCM") {
