@@ -7,6 +7,7 @@ import hudson.FilePath
 def runPipeline() {
   def common_docker = new JenkinsDeployerPipeline()
   def environment = ""
+  def gitCommitHash = ""
   def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
   def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def repositoryName = "${JOB_NAME}"
@@ -86,6 +87,7 @@ def runPipeline() {
         container('fuchicorptools') {
           stage("Pulling the code") {
             checkout scm
+            gitCommitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
           }
 
           stage('Build docker image') {
@@ -112,7 +114,7 @@ def runPipeline() {
 
              // Push image to the Nexus with new release
               docker.withRegistry('https://docker.fuchicorp.com', 'nexus-docker-creds') {
-                  dockerImage.push("0.${BUILD_NUMBER}")
+                  dockerImage.push("${gitCommitHash}") 
                   // messanger.sendMessage("slack", "SUCCESS", slackChannel)
 
                   if (params.PUSH_LATEST) {
