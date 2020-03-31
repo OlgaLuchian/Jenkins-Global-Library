@@ -87,7 +87,11 @@ def runPipeline() {
         container('fuchicorptools') {
           stage("Pulling the code") {
             checkout scm
+            echo env.GIT_COMMIT
+            echo env.GIT_BRANCH
+            echo env.GIT_REVISION
             gitCommitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+            
           }
 
           stage('Build docker image') {
