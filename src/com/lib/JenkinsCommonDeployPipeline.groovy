@@ -7,8 +7,13 @@ import hudson.FilePath
 // Getting userid https://stackoverflow.com/questions/35902664/get-username-logged-in-jenkins-from-jenkins-workflow-pipeline-plugin
 @NonCPS
 def getBuildUser() {
+      try {
         return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-    }
+      } catch (e) {
+        def user = "AutoTrigger"
+        return user
+      }
+  }
 
 def runPipeline() {
   def common_docker = new JenkinsDeployerPipeline()
