@@ -15,22 +15,8 @@ def runPipeline() {
       .replace('-build', '')
       .replace('-deploy', '')
 
-  switch(branch) {
-    case 'master': environment = 'prod'
-    break
-
-    case 'qa': environment = 'qa'
-    break
-
-    case 'dev': environment = 'dev'
-    break
-
-    case 'tools': environment = 'tools'
-    break
-
-    default:
-        currentBuild.result = 'FAILURE'
-        print('This branch does not supported')
+  if (branch.contains('feature')) {
+      repositoryName = repositoryName + '-feature'
   }
 
   try {
@@ -96,10 +82,12 @@ def runPipeline() {
 
   podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate) {
       node(k8slabel) {
+
         container('fuchicorptools') {
           stage("Pulling the code") {
             checkout scm
           }
+
           stage('Build docker image') {
             dir("${WORKSPACE}/deployments/docker") {
               // Build the docker image
