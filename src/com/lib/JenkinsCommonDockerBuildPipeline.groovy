@@ -125,10 +125,10 @@ def runPipeline() {
 
            stage("Clean up")
 
-           sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}-${environment}:0.${BUILD_NUMBER}"
+           sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:0.${BUILD_NUMBER}"
 
            if (params.PUSH_LATEST) {
-             sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}-${environment}:latest"
+             sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
            }
 
          }
