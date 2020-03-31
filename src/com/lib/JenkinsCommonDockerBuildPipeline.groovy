@@ -16,9 +16,22 @@ def runPipeline() {
       .replace('-build', '')
       .replace('-deploy', '')
 
-  if (branch.contains('feature')) {
-      repositoryName = repositoryName + '-feature'
+  def deployJobName = "${JOB_NAME}"
+      .split('/')[0]
+      .replace('-build', '-deploy')
+
+  if (branch.contains('dev-feature')) {
+    environment = 'dev' 
+    repositoryName = repositoryName + 'dev-feature'
+
+  } else if (branch.contains('qa-feature')) {
+    repositoryName = repositoryName + 'qa-feature'
+    environment = 'qa' 
   }
+  
+  if (branch == 'master') {
+    environment = 'prod' 
+  } 
 
   try {
     properties([
@@ -124,12 +137,21 @@ def runPipeline() {
 
            }
 
-           stage("Clean up")
+           stage("Clean up") {
+              sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:${gitCommitHash}"
 
-           sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:${gitCommitHash}"
+              if (params.PUSH_LATEST) {
+                sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
+              }
+           }
 
-           if (params.PUSH_LATEST) {
-             sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
+           stage("Trigger Deploy") {
+              build job: "${deployJobName}/master", 
+              parameters: [
+                  [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],
+                  [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"], 
+                  [$class: 'StringParameterValue', name: 'environment', value: "${environment}"]
+                  ]
            }
 
          }

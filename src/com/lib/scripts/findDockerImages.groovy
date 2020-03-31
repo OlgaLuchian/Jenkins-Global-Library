@@ -14,5 +14,5 @@ while (true) {
     if (nexusData.continuationToken == null ) { break } }
 if(!versionList) { versionList.add("ImmageNotFound") } 
 return versionList.reverse(true) }
-println(findDockerImages("dev"))
+println(findDockerImages("academy"))
 
