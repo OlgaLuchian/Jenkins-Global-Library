@@ -171,19 +171,22 @@ def runPipeline() {
             sh "cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars"
 
             if (getBuildUser() == "AutoTrigger") {
-              try {
-                  println("Found default configurations appending to main configuration")
-                  withCredentials([
-                    file(credentialsId: "${deploymentName}-config", variable: 'default-config')
-                  ])
-                  sh """
-                  #!/bin/bash
-                  cat \$default-config >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
-                  cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
-                  """
-              } catch (e) {
-                  println("Default configurations inside jenkins secret does not exist. Skiping!!")
-              }
+            try {
+                withCredentials([
+                    file(credentialsId: "academy-config", variable: 'default_config')
+                ]) {
+                    sh """
+                    #!/bin/bash
+                    cat \$default_config >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                    echo #############################################################
+                    cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                    echo #############################################################"""
+                }
+            
+                println("Found default configurations appanded to main configuration")
+            } catch (e) {
+                println("Default configurations not founds. Skiping!!")
+            }
               
             }
           }
