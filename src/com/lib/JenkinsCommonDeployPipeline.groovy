@@ -178,7 +178,7 @@ def runPipeline() {
                   ])
                   sh """
                   #!/bin/bash
-                  cat ${default-config} >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                  cat \$default-config >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
                   cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
                   """
               } catch (e) {
