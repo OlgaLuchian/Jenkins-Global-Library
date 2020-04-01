@@ -126,7 +126,7 @@ def runPipeline() {
               path: /var/run/docker.sock
     """
 
-  podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate) {
+  podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: params.debugMode) {
       node(k8slabel) {
 
         stage("Deployment Info") {
