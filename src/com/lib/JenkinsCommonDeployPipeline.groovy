@@ -168,7 +168,24 @@ def runPipeline() {
               [file: "${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars", text: "${deployment_tfvars}"]
               )
 
-              sh "cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars"
+            sh "cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars"
+
+            if (getBuildUser() == "AutoTrigger") {
+              try {
+                  println("Found default configurations appending to main configuration")
+                  withCredentials([
+                    file(credentialsId: "${deploymentName}-config", variable: 'default-config')
+                  ])
+                  sh """
+                  #!/bin/bash
+                  cat ${default-config} >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                  cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                  """
+              } catch (e) {
+                  println("Default configurations inside jenkins secret does not exist. Skiping!!")
+              }
+              
+            }
           }
           stage('Terraform Apply/Plan') {
             if (!params.terraform_destroy) {
