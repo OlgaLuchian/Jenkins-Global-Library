@@ -177,7 +177,7 @@ def runPipeline() {
             if (getBuildUser() == "AutoTrigger") {
             try {
                 withCredentials([
-                    file(credentialsId: "academy-config", variable: 'default_config')
+                    file(credentialsId: "${deploymentName}-config", variable: 'default_config')
                 ]) {
                     sh """
                       #!/bin/bash
