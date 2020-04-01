@@ -62,7 +62,12 @@ def runPipeline() {
       // Extra configurations to deploy with it 
       text(name: 'deployment_tfvars', 
       defaultValue: 'extra_values = "tools"', 
-      description: 'terraform configuration')
+      description: 'terraform configuration'),
+
+      // Boolean Paramater for debuging this job 
+      booleanParam(defaultValue: false, 
+      description: 'If you would like to turn on debuging click this!!', 
+      name: 'debugMode')
 
       ]
       )])
@@ -161,8 +166,14 @@ def runPipeline() {
               [file: "${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars", text: "${deployment_tfvars}"]
               )
 
-            sh "cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars"
-
+            if (params.debugMode) {
+              sh """
+                echo #############################################################
+                cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                echo #############################################################
+              """
+            }
+            
             if (getBuildUser() == "AutoTrigger") {
             try {
                 withCredentials([
@@ -171,10 +182,15 @@ def runPipeline() {
                     sh """
                       #!/bin/bash
                       cat \$default_config >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
-                      echo #############################################################
-                      cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
-                      echo #############################################################
+                      
                     """
+                    if (params.debugMode) {
+                      sh """
+                        echo #############################################################
+                        cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                        echo #############################################################
+                      """
+                    }
                 }
             
                 println("Found default configurations appanded to main configuration")
