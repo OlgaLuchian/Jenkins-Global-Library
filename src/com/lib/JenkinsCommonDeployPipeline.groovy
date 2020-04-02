@@ -174,7 +174,6 @@ def runPipeline() {
               """
             }
             
-            if (getBuildUser() == "AutoTrigger") {
             try {
                 withCredentials([
                     file(credentialsId: "${deploymentName}-config", variable: 'default_config')
@@ -198,7 +197,6 @@ def runPipeline() {
                 println("Default configurations not founds. Skiping!!")
             }
               
-            }
           }
           stage('Terraform Apply/Plan') {
             if (!params.terraform_destroy) {
