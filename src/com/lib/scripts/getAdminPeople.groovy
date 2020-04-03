@@ -1,26 +1,33 @@
+import hudson.model.Hudson
+import com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy    
+
 def trigerUser = 'fsadykov'
 def environment = "prod" 
-def adminList = ["tunji", "ktalant", "aclipco"]
+def commonFunction = new com.lib.commonFunction()
 
-
-if (trigerUser in adminList ) {
+if (trigerUser in prodRole ) {
     println("You are allowed to do prod deployments!!")
 } else {
-    if (environment != 'prod') {
+    if (commonFunction.isAdmin(trigerUser)) {
         println("You are alowed to do this trigger")
     } else {
         println("You are not allowed to do prod deployments!!")
     }
 }
 
-import com.michelin.cio.hudson.plugins.rolestrategy.*
-import groovy.json.JsonSlurper
-def myJsonreader = new JsonSlurper()
-def members = myJsonreader.parse(new URL("https://fsadykov:111a221e0f7f59f81899247cc2f519f48e@jenkins.fuchicorp.com/role-strategy/strategy/getRole?type=globalRoles&roleName=admin"))
 
 
-def roleBasedAuthenticationStrategy = new RoleBasedAuthorizationStrategy()
+ 
+def authStrategy = Hudson.instance.getAuthorizationStrategy()
 
-println(roleBasedAuthenticationStrategy.doGetRole(type='globalRoles', roleName='admin'))
-type='globalRoles', roleName='admin'
-getRole ?type=globalRoles&roleName=admin'
+def cleanUsers = { it.flatten().sort().unique() - "null"}
+if(authStrategy instanceof RoleBasedAuthorizationStrategy){
+           
+   def permissions = authStrategy.roleMaps.inject([:]){map, it -> map + it.value.grantedRoles}
+   def users = cleanUsers(permissions*.value)
+
+   println(users)
+
+}else{
+   println "Not able to list the permissions by user"
+} 
