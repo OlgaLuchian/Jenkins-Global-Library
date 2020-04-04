@@ -7,9 +7,11 @@ import hudson.FilePath
 
 
 def runPipeline() {
-  def common_docker = new JenkinsDeployerPipeline()
-  def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
-  def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
+  def common_docker   = new JenkinsDeployerPipeline()
+  def commonFunction  = new scripts.commonFunction()
+  def triggerUser     = getBuildUser()
+  def branch          = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+  def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def allEnvironments = ['dev', 'qa', 'test', 'prod']
   def findDockerImageScript = '''
     import groovy.json.JsonSlurper
@@ -33,6 +35,13 @@ def runPipeline() {
   def deploymentName = "${JOB_NAME}".split('/')[0].replace('-fuchicorp', '').replace('-build', '').replace('-deploy', '')
 
   try {
+    
+    if (commonFunction.isAdmin(triggerUser)) {
+    println("You are allowed to do prod deployments!!")
+    } else {
+        println("You are not allowed to do prod deployments!!")
+    }
+
     // Trying to build the job
     properties([ parameters([
 

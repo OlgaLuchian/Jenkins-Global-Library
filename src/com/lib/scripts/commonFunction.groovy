@@ -5,6 +5,3 @@ def isAdmin(username) {
     return instance.getAuthorizationStrategy().getACL(User.get(username))
     .hasPermission(User.get(username).impersonate(), hudson.model.Hudson.ADMINISTER)
 }
-
-
-println(isAdmin('fsadykov'))
