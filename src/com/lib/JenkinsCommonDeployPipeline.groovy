@@ -8,7 +8,7 @@ import hudson.FilePath
 
 def runPipeline() {
   def common_docker   = new JenkinsDeployerPipeline()
-  def commonFunction  = new commonFunction()
+  def commonFunction  = new CommonFunctions()
   def triggerUser     = getBuildUser()
   def branch          = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
   def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
