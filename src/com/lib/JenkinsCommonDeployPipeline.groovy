@@ -36,12 +36,6 @@ def runPipeline() {
 
   try {
 
-    if (commonFunctions.isAdmin(triggerUser)) {
-      println("You are allowed to do prod deployments!!")
-    } else {
-      currentBuild.result = 'ABORTED' 
-      error('You are not allowed to do prod deployments!!')
-    }
 
     // Trying to build the job
     properties([ parameters([
@@ -81,6 +75,19 @@ def runPipeline() {
 
       ]
       )])
+
+      if (commonFunctions.isAdmin(triggerUser)) {
+        println("You are allowed to do prod deployments!!")
+      } else {
+
+        if (params.environment in ['dev', 'qa', 'test']) {
+          println("You are allowed to do non-prod deployments!!")
+
+        } else {
+          currentBuild.result = 'ABORTED' 
+          error('You are not allowed to do prod deployments!!')
+        }
+      }
 
       // Jenkins slave to build this job 
       def slavePodTemplate = """
