@@ -8,7 +8,7 @@ import hudson.FilePath
 
 def runPipeline() {
   def common_docker   = new JenkinsDeployerPipeline()
-  def commonFunction  = new scripts.commonFunction()
+  def commonFunction  = new com.lib.scripts.commonFunction()
   def triggerUser     = getBuildUser()
   def branch          = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
   def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
@@ -35,7 +35,7 @@ def runPipeline() {
   def deploymentName = "${JOB_NAME}".split('/')[0].replace('-fuchicorp', '').replace('-build', '').replace('-deploy', '')
 
   try {
-    
+
     if (commonFunction.isAdmin(triggerUser)) {
     println("You are allowed to do prod deployments!!")
     } else {
