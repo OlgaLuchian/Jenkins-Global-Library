@@ -37,7 +37,7 @@ def runPipeline() {
   try {
 
     if (commonFunctions.isAdmin(triggerUser)) {
-    println("You are allowed to do prod deployments!!")
+      println("You are allowed to do prod deployments!!")
     } else {
         println("You are not allowed to do prod deployments!!")
     }
