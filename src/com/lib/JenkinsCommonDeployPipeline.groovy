@@ -38,10 +38,9 @@ def runPipeline() {
 
     if (commonFunctions.isAdmin(triggerUser)) {
       println("You are allowed to do prod deployments!!")
-      currentBuild.result = 'ABORTED'
-      error('Stopping early…')
     } else {
-        println("You are not allowed to do prod deployments!!")
+      currentBuild.result = 'ABORTED' 
+      error('You are not allowed to do prod deployments!!')
     }
 
     // Trying to build the job
