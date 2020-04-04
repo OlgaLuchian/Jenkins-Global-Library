@@ -1,4 +1,5 @@
-
+#!/usr/bin/env groovy
+package com.lib.scripts
 
 def isAdmin(username) {
     def instance = Jenkins.getInstance()
