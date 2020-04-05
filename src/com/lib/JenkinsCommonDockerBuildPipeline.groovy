@@ -5,7 +5,6 @@ import hudson.FilePath
 
 
 def runPipeline() {
-  def common_docker = new JenkinsDeployerPipeline()
   def commonFunctions = new CommonFunction()
   def triggerUser = commonFunctions.getBuildUser()
   def environment = ""
@@ -29,6 +28,9 @@ def runPipeline() {
   } else if (branch.contains('qa-feature')) {
     repositoryName = repositoryName + 'qa-feature'
     environment = 'qa' 
+  } else if (branch.contains('PR')) {
+    repositoryName = repositoryName + 'pr-feature'
+    environment = 'test' 
   }
   
   if (branch == 'master') {
