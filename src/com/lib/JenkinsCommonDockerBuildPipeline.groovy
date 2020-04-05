@@ -6,6 +6,7 @@ import hudson.FilePath
 
 def runPipeline() {
   def common_docker = new JenkinsDeployerPipeline()
+  def commonFunctions = new CommonFunction()
   def environment = ""
   def gitCommitHash = ""
   def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
@@ -40,6 +41,12 @@ def runPipeline() {
           description: 'Click this if you would like to deploy to latest',
           name: 'PUSH_LATEST'
           )])])
+
+      if (triggerUser != "AutoTrigger") {
+        commonFunctions.validateDeployment(triggerUser, environment)
+      } else {
+        println("The job is triggereted automatically and skiping the validation !!!")
+      }
 
       def slavePodTemplate = """
       metadata:
@@ -123,38 +130,34 @@ def runPipeline() {
               done
               """
             }
+            // Push image to the Nexus with new release
+            docker.withRegistry('https://docker.fuchicorp.com', 'nexus-docker-creds') {
+                dockerImage.push("${gitCommitHash}") 
 
-
-             // Push image to the Nexus with new release
-              docker.withRegistry('https://docker.fuchicorp.com', 'nexus-docker-creds') {
-                  dockerImage.push("${gitCommitHash}") 
-
-                  if (params.PUSH_LATEST) {
-                    dockerImage.push("latest")
-                }
+                if (params.PUSH_LATEST) {
+                  dockerImage.push("latest")
               }
-
-
+            }
            }
 
-           stage("Clean up") {
-              sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:${gitCommitHash}"
 
-              if (params.PUSH_LATEST) {
-                sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
-              }
-           }
+          stage("Clean up") {
+            sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:${gitCommitHash}"
 
-           stage("Trigger Deploy") {
-              build job: "${deployJobName}/master", 
-              parameters: [
-                  [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],
-                  [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"], 
-                  [$class: 'StringParameterValue', name: 'environment', value: "${environment}"]
-                  ]
-           }
+            if (params.PUSH_LATEST) {
+              sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
+            }
+          }
 
-         }
+          stage("Trigger Deploy") {
+            build job: "${deployJobName}/master", 
+            parameters: [
+                [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],
+                [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"], 
+                [$class: 'StringParameterValue', name: 'environment', value: "${environment}"]
+                ]
+          }
+        } 
       }
     }
   } catch (e) {
