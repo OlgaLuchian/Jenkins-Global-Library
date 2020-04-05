@@ -28,7 +28,8 @@ def runPipeline() {
   } else if (branch.contains('qa-feature')) {
     repositoryName = repositoryName + 'qa-feature'
     environment = 'qa' 
-  } else if (branch.contains('PR')) {
+
+  } else if (branch.contains('pr')) {
     repositoryName = repositoryName + 'pr-feature'
     environment = 'test' 
   }
