@@ -28,7 +28,7 @@ def scheduleBaseJobs(String baseName, String jobName) {
 def validateDeployment(username, environment) {
     if (isAdmin(username)) {
         println("You are allowed to do prod deployments!!")
-        
+
     } else {
 
         if (environment in ['dev', 'qa', 'test']) {
@@ -40,6 +40,18 @@ def validateDeployment(username, environment) {
         }
     }
 }
+
+
+// Function to get user id 
+@NonCPS
+def getBuildUser() {
+      try {
+        return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+      } catch (e) {
+        def user = "AutoTrigger"
+        return user
+      }
+  }
 
 
 return this 

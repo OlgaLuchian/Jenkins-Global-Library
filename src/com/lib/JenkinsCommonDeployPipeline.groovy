@@ -9,7 +9,7 @@ import hudson.FilePath
 def runPipeline() {
   def common_docker   = new JenkinsDeployerPipeline()
   def commonFunctions = new CommonFunction()
-  def triggerUser     = getBuildUser()
+  def triggerUser     = commonFunctions.getBuildUser()
   def branch          = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
   def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def allEnvironments = ['dev', 'qa', 'test', 'prod']
@@ -277,17 +277,5 @@ def runPipeline() {
     println(e.getMessage())
   }
 }
-
-// Function to get user id 
-@NonCPS
-def getBuildUser() {
-      try {
-        return currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-      } catch (e) {
-        def user = "AutoTrigger"
-        return user
-      }
-  }
-
 
 return this
