@@ -147,7 +147,7 @@ def runPipeline() {
           println(prettyPrint(toJson([
             "Environment" : environment,
             "Deployment" : deploymentName,
-            "Builder" : getBuildUser(),
+            "Builder" : triggerUser,
             "Build": env.BUILD_NUMBER
           ])))
         }
