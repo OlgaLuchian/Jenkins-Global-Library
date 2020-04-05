@@ -76,17 +76,12 @@ def runPipeline() {
       ]
       )])
 
-      if (commonFunctions.isAdmin(triggerUser)) {
-        println("You are allowed to do prod deployments!!")
+
+      if (triggerUser != "AutoTrigger") {
+        commonFunctions.validateDeployment(triggerUser, params.environment)
+        
       } else {
-
-        if (params.environment in ['dev', 'qa', 'test']) {
-          println("You are allowed to do non-prod deployments!!")
-
-        } else {
-          currentBuild.result = 'ABORTED' 
-          error('You are not allowed to do prod deployments!!')
-        }
+        println("The job is triggereted automatically and skiping the validation !!!")
       }
 
       // Jenkins slave to build this job 

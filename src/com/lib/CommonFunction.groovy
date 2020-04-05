@@ -24,4 +24,22 @@ def scheduleBaseJobs(String baseName, String jobName) {
   }
 }
 
+
+def validateDeployment(username, environment) {
+    if (isAdmin(username)) {
+        println("You are allowed to do prod deployments!!")
+        
+    } else {
+
+        if (environment in ['dev', 'qa', 'test']) {
+            println("You are allowed to do non-prod deployments!!")
+
+        } else {
+            currentBuild.result = 'ABORTED' 
+            error('You are not allowed to do prod deployments!!')
+        }
+    }
+}
+
+
 return this 
