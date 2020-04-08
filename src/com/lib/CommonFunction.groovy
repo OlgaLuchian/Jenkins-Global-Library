@@ -35,8 +35,7 @@ def validateDeployment(username, environment) {
             println("You are allowed to do non-prod deployments!!")
 
         } else {
-            currentBuild.result = 'ABORTED' 
-            error('You are not allowed to do prod deployments!!')
+             unstable 'You are not allowed to do prod deployments!!' 
         }
     }
 }
