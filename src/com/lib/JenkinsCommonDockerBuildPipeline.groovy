@@ -9,7 +9,7 @@ def runPipeline() {
   def triggerUser = commonFunctions.getBuildUser()
   def environment = ""
   def gitCommitHash = ""
-  def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+  def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '')
   def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def repositoryName = "${JOB_NAME}"
       .split('/')[0]
