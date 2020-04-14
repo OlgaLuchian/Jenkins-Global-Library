@@ -162,7 +162,7 @@ def runPipeline() {
           stage("Polling SCM") {
             echo "${branchName}"
             checkout([$class: 'GitSCM',
-                    branches: [[name: "origin/${branchName}"]],
+                    branches: [[name: "${branchName}"]],
                     ])
           }
 
