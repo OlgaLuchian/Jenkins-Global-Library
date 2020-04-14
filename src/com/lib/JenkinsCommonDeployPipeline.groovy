@@ -60,7 +60,7 @@ def runPipeline() {
       
       // Branch name to deploy environment 
       gitParameter(branch: '', branchFilter: '.*', defaultValue: 'master', 
-      description: 'Please select the branch name to deploy', name: 'BRANCH_PATTERN', 
+      description: 'Please select the branch name to deploy', name: 'branchName', 
       quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH'),
       
       // list of environment getting from <allEnvironments> and defining variable <environment> to deploy 
@@ -161,7 +161,7 @@ def runPipeline() {
 
           stage("Polling SCM") {
             checkout([$class: 'GitSCM',
-                    branches: [[name: "origin/${BRANCH_PATTERN}"]],
+                    branches: [[name: "origin/${branchName}"]],
                     ])
           }
 
