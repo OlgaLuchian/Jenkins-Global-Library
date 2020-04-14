@@ -62,7 +62,7 @@ def runPipeline() {
       // Branch name to deploy environment 
       gitParameter(branch: '', branchFilter: 'origin/(.*)', defaultValue: 'origin/master', 
       description: 'Please select the branch name to deploy', name: 'branchName', 
-      quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH'),
+      quickFilterEnabled: true, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH'),
       
       // list of environment getting from <allEnvironments> and defining variable <environment> to deploy 
       choice(name: 'environment', 
@@ -161,8 +161,6 @@ def runPipeline() {
         container('fuchicorptools') {
 
           stage("Polling SCM") {
-            // echo branchName.replace('origin/', '')
-            // git branch: "${branchName.replace('origin/', '')}", url: "${gitUrl}"
             checkout([$class: 'GitSCM', 
                        branches: [[name: branchName]], 
                        doGenerateSubmoduleConfigurations: false, 

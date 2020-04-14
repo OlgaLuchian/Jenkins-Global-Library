@@ -154,7 +154,7 @@ def runPipeline() {
           }
 
           stage("Trigger Deploy") {
-            build job: "${deployJobName}/master", 
+            build job: "${deployJobName}", 
             parameters: [
                 [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],
                 [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"], 
