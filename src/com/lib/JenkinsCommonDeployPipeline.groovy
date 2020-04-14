@@ -60,7 +60,7 @@ def runPipeline() {
       visibleItemCount: 5),
       
       // Branch name to deploy environment 
-      gitParameter(branch: '', branchFilter: 'origin.*/(.*)', defaultValue: 'origin/master', 
+      gitParameter(branch: '', branchFilter: 'origin.*', defaultValue: 'origin/master', 
       description: 'Please select the branch name to deploy', name: 'branchName', 
       quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH'),
       
