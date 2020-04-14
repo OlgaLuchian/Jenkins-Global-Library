@@ -161,9 +161,13 @@ def runPipeline() {
         container('fuchicorptools') {
 
           stage("Polling SCM") {
-            echo branchName.replace('origin/', '')
-            git branch: "${branchName.replace('origin/', '')}", url: "${gitUrl}"
-            echo "Worked"
+            // echo branchName.replace('origin/', '')
+            // git branch: "${branchName.replace('origin/', '')}", url: "${gitUrl}"
+            checkout([$class: 'GitSCM', 
+                       branches: [[name: branchName]], 
+                       doGenerateSubmoduleConfigurations: false, 
+                       extensions: [], submoduleCfg: [], 
+                       userRemoteConfigs: [[url: gitUrl]]])
           }
 
           stage('Generate Configurations') {
