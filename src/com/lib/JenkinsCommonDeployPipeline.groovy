@@ -160,6 +160,7 @@ def runPipeline() {
         container('fuchicorptools') {
 
           stage("Polling SCM") {
+            echo "${branchName}"
             checkout([$class: 'GitSCM',
                     branches: [[name: "origin/${branchName}"]],
                     ])
