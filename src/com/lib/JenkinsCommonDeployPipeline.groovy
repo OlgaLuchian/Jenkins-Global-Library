@@ -164,7 +164,7 @@ def runPipeline() {
             echo "${branchName}"
             checkout([
               $class                           : 'GitSCM',
-              branches                         : [[name: branchName]],
+              branches                         : [[name: branchName.replace('origin/', '')]],
               doGenerateSubmoduleConfigurations: false,
               extensions                       : [[$class: 'CleanCheckout']],
               submoduleCfg                     : [],
