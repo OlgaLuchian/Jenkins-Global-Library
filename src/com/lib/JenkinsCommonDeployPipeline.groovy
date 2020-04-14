@@ -168,7 +168,7 @@ def runPipeline() {
               doGenerateSubmoduleConfigurations: false,
               extensions                       : [[$class: 'CleanCheckout']],
               submoduleCfg                     : [],
-              userRemoteConfigs                : [[credentialsId: false, url: gitUrl]]
+              userRemoteConfigs                : [[url: gitUrl]]
                         ])
           }
 
