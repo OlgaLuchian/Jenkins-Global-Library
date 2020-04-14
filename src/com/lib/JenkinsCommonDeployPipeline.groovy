@@ -11,6 +11,7 @@ def runPipeline() {
   def commonFunctions = new CommonFunction()
   def triggerUser     = commonFunctions.getBuildUser()
   def branch          = "${scm.branches[0].name}".replaceAll(/^\*\//, '').replace("/", "-").toLowerCase()
+  def gitUrl          = "${scm.getUserRemoteConfigs()[0].getUrl()}"
   def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def allEnvironments = ['dev', 'qa', 'test', 'prod']
   def findDockerImageScript = '''
@@ -163,7 +164,8 @@ def runPipeline() {
             echo "${branchName}"
             checkout([$class: 'GitSCM',
                     branches: [[name: "${branchName}"]],
-                    ])
+                    userRemoteConfigs: [[
+                        url: "${gitUrl}"]]])
           }
 
           stage('Generate Configurations') {
