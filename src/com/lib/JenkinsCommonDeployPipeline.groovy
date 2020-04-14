@@ -162,7 +162,7 @@ def runPipeline() {
 
           stage("Polling SCM") {
             echo branchName.replace('origin/', '')
-            git branch: branchName, url: gitUrl
+            git branch: "${branchName}", url: "${gitUrl}"
           }
 
           stage('Generate Configurations') {
