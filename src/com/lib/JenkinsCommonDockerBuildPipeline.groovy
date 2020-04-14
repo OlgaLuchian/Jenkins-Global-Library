@@ -157,7 +157,8 @@ def runPipeline() {
             build job: "${deployJobName}", 
             parameters: [
                 [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],
-                [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"], 
+                [$class: 'StringParameterValue', name: 'selectedDockerImage', value: "${repositoryName}:${gitCommitHash}"],
+                [$class: 'StringParameterValue', name: 'branchName', value: branch],
                 [$class: 'StringParameterValue', name: 'environment', value: "${environment}"]
                 ]
           }
