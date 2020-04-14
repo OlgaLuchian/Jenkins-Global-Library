@@ -60,7 +60,7 @@ def runPipeline() {
       visibleItemCount: 5),
       
       // Branch name to deploy environment 
-      gitParameter(branch: '', branchFilter: '.*', defaultValue: 'master', 
+      gitParameter(branch: '', branchFilter: '.*', defaultValue: 'origin/master', 
       description: 'Please select the branch name to deploy', name: 'branchName', 
       quickFilterEnabled: false, selectedValue: 'NONE', sortMode: 'NONE', tagFilter: '*', type: 'PT_BRANCH'),
       
@@ -162,10 +162,14 @@ def runPipeline() {
 
           stage("Polling SCM") {
             echo "${branchName}"
-            checkout([$class: 'GitSCM',
-                    branches: [[name: "${branchName}"]],
-                    userRemoteConfigs: [[
-                        url: "${gitUrl}"]]])
+            checkout([
+              $class                           : 'GitSCM',
+              branches                         : [[name: branchName]],
+              doGenerateSubmoduleConfigurations: false,
+              extensions                       : [[$class: 'CleanCheckout']],
+              submoduleCfg                     : [],
+              userRemoteConfigs                : [[credentialsId: None, url: gitUrl]]
+                        ])
           }
 
           stage('Generate Configurations') {
