@@ -1,7 +1,9 @@
+
+![](https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/automotive.png)
+
 # FuchiCorp Jenkins Global Library
 #FuchiCorp
 
-<img src="_docs_pictures/automotive.png" width="500px" alt="kops logo">
 
 This page is contains how to use Jenkins Global Library.  You will need to configure the Jenkins Shared library on your Jenkins to be able to use this library.  Use following link to be able to configure [Jenkins Global Library](https://jenkins.io/doc/book/pipeline/shared-libraries/). On FuchiCorp Jenkins it's already configured by this script  [link](https://github.com/fuchicorp/common_tools/blob/2f0639c77c83b8b7b812434ee2681bf0bbd3f8be/charts/jenkins/values.yaml#L246) 
 
@@ -45,6 +47,6 @@ common.runPipeline()
 ```
 
 Same process you will need to push to SCM and create your Jenkins job with following name `APPNAME-deploy`. 
-![](https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/jenkin-deploy.png)
+![](https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/jenkins-deploy.png)
 
 
