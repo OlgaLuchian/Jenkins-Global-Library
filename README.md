@@ -1,5 +1,5 @@
 
-![](https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/automotive.png)
+![](https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/automotive.png| width=250)
 
 # FuchiCorp Jenkins Global Library
 #FuchiCorp
