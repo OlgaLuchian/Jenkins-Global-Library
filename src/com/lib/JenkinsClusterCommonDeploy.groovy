@@ -131,7 +131,7 @@ def runPipeline() {
             """
             // sh /scripts/Dockerfile/set-config.sh Should go to Docker container CMD so we do not have to call on slave 
             deployment_tfvars += """
-              credentials            = \"./fuchicorp-service-account.json\"
+              credentials            = \"fuchicorp-service-account.json\"
             """.stripIndent()
 
             writeFile(
