@@ -125,9 +125,7 @@ def runPipeline() {
 
           stage('Generate Configurations') {
             sh """
-              mkdir -p ${WORKSPACE}/deployments/terraform/
-              cat  /etc/secrets/service-account/credentials.json > ${WORKSPACE}/deployments/terraform/fuchicorp-service-account.json
-              ls ${WORKSPACE}/deployments/terraform/
+              cat  /etc/secrets/service-account/credentials.json > fuchicorp-service-account.json
               ## This script should move to docker container to set up ~/.kube/config
               sh /scripts/Dockerfile/set-config.sh
             """
@@ -139,13 +137,13 @@ def runPipeline() {
             """.stripIndent()
 
             writeFile(
-              [file: "${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars", text: "${deployment_tfvars}"]
+              [file: "deployment_configuration.tfvars", text: "${deployment_tfvars}"]
               )
 
             if (params.debugMode) {
               sh """
                 echo #############################################################
-                cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                cat deployment_configuration.tfvars
                 echo #############################################################
               """
             }
@@ -156,13 +154,13 @@ def runPipeline() {
                 ]) {
                     sh """
                       #!/bin/bash
-                      cat \$default_config >> ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                      cat \$default_config >> deployment_configuration.tfvars
                       
                     """
                     if (params.debugMode) {
                       sh """
                         echo #############################################################
-                        cat ${WORKSPACE}/deployments/terraform/deployment_configuration.tfvars
+                        cat deployment_configuration.tfvars
                         echo #############################################################
                       """
                     }
@@ -178,7 +176,7 @@ def runPipeline() {
             if (!params.terraform_destroy) {
               if (params.terraform_apply) {
 
-                dir("${WORKSPACE}/deployments/terraform/") {
+                dir("${WORKSPACE}") {
                   echo "##### Terraform Applying the Changes ####"
                   sh '''#!/bin/bash -e
                     source set-env.sh deployment_configuration.tfvars
@@ -188,7 +186,7 @@ def runPipeline() {
 
               } else {
 
-                dir("${WORKSPACE}/deployments/terraform/") {
+                dir("${WORKSPACE}") {
                   echo "##### Terraform Plan (Check) the Changes #### "
                   sh '''#!/bin/bash -e
                     source set-env.sh deployment_configuration.tfvars
@@ -202,7 +200,7 @@ def runPipeline() {
           stage('Terraform Destroy') {
             if (!params.terraform_apply) {
               if (params.terraform_destroy) {
-                dir("${WORKSPACE}/deployments/terraform/") {
+                dir("${WORKSPACE}") {
                     echo "##### Terraform Destroing ####"
                     sh '''#!/bin/bash -e
                         source set-env.sh deployment_configuration.tfvars
