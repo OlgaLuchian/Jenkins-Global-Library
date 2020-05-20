@@ -5,7 +5,8 @@ import hudson.FilePath
 
 
 def runPipeline() {
-  def commonFunctions = new CommonFunction()
+  def commonFunctions = new CommonFunction()bnbnnnbbnbmn mnb,jgf,jbmgfdhf
+
   def triggerUser = commonFunctions.getBuildUser()
   def environment = ""
   def gitCommitHash = ""
@@ -29,7 +30,7 @@ def runPipeline() {
     repositoryName = repositoryName + 'qa-feature'
     environment = 'qa' 
 
-  } else if (branch.contains('pr')) {
+  } else if (branch.contains('PR')) {
     repositoryName = repositoryName + 'pr-feature'
     environment = 'test' 
   }
