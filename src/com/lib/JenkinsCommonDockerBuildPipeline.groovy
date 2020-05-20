@@ -29,7 +29,7 @@ def runPipeline() {
     repositoryName = repositoryName + 'qa-feature'
     environment = 'qa' 
 
-  } else if (branch.contains('PR')) {
+  } else if (branch.contains('PR-16')) {
     repositoryName = repositoryName + 'pr-feature'
     environment = 'test' 
   }
