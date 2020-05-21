@@ -20,6 +20,10 @@ def runPipeline() {
   def deployJobName = "${JOB_NAME}"
       .split('/')[0]
       .replace('-build', '-deploy')
+  
+  if (branch == 'master') {
+    environment = 'prod' 
+  } 
 
   if (branch.contains('dev-feature')) {
     environment = 'dev' 
@@ -32,11 +36,10 @@ def runPipeline() {
   } else if (branch.contains('PR')) {
     repositoryName = repositoryName + 'pr-feature'
     environment = 'test' 
+    branch = 'master'
   }
   
-  if (branch == 'master') {
-    environment = 'prod' 
-  } 
+  
 
   try {
     properties([
