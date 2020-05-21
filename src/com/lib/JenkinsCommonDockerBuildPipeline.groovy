@@ -36,7 +36,7 @@ def runPipeline() {
   } else if (branch.contains('PR')) {
     repositoryName = repositoryName + 'pr-feature'
     environment = 'test' 
-    branch = 'master'
+    branch = 'dev-feature/mehmet'
   }
   
   
