@@ -11,6 +11,7 @@ def runPipeline() {
   def gitCommitHash = ""
   def branch = "${scm.branches[0].name}".replaceAll(/^\*\//, '')
   def k8slabel = "jenkins-pipeline-${UUID.randomUUID().toString()}"
+  def timeStamp = Calendar.getInstance().getTime().format('ssmmhh-ddMMYYY',TimeZone.getTimeZone('CST'))
   def repositoryName = "${JOB_NAME}"
       .split('/')[0]
       .replace('-fuchicorp', '')
@@ -119,6 +120,9 @@ def runPipeline() {
               // Build the docker image
               dockerImage = docker.build(repositoryName, "--build-arg branch_name=${branch} .")
             }
+            timestamps {
+              // getting timestamp
+            }
           }
 
           stage('Push image') {
@@ -142,6 +146,9 @@ def runPipeline() {
                   dockerImage.push("latest")
               }
             }
+            timestamps {
+              // getting timestamp
+            }
            }
 
 
@@ -150,6 +157,9 @@ def runPipeline() {
 
             if (params.PUSH_LATEST) {
               sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:latest"
+            }
+            timestamps {
+              // getting timestamp
             }
           }
 
@@ -161,6 +171,9 @@ def runPipeline() {
                 [$class: 'StringParameterValue', name: 'branchName', value: branch],
                 [$class: 'StringParameterValue', name: 'environment', value: "${environment}"]
                 ]
+            timestamps {
+              // getting timestamp
+            }
           }
         } 
       }
