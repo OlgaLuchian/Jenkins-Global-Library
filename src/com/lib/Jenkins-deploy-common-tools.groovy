@@ -65,7 +65,8 @@ def slavePodTemplate = """
         }
      }
 
-        timestamps{ stage('Generate Configurations') {
+        timetsamps{
+        stage('Generate Configurations') {
           container('fuchicorptools') {
              withCredentials([
                 file(credentialsId: 'common-tools', variable: 'common_tools_conf'),
@@ -84,7 +85,9 @@ def slavePodTemplate = """
 
         }
         }
-        timestamps{ stage("Apply/Plan")  {
+        
+        timestamps{ 
+          stage("Apply/Plan")  {
           container('fuchicorptools') {
               withCredentials([
                 file(credentialsId: 'common-tools', variable: 'common_tools_conf'),
@@ -101,7 +104,6 @@ def slavePodTemplate = """
               }
             
           }
-        }
         }
     }
   }

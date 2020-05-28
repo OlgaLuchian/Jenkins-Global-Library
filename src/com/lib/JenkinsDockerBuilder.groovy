@@ -73,7 +73,8 @@ def runPipeline() {
           dockerImage = docker.build(repositoryName, "--build-arg branch_name=${branch} .")
       }
 
-      timestamps{ stage('Push image') {
+      timestamps{ 
+        stage('Push image') {
 
          // Push image to the Nexus with new release
           docker.withRegistry('https://docker.fuchicorp.com', 'nexus-private-admin-credentials') {
@@ -90,7 +91,8 @@ def runPipeline() {
        }
       }
 
-       timestamps{ stage('clean up') {
+       timestamps{ 
+         stage('clean up') {
          sh "docker rmi docker.fuchicorp.com/${repositoryName}:0.${BUILD_NUMBER} --force "
          sh "docker rmi docker.fuchicorp.com/${repositoryName}:latest --force"
          sh "rm -rf ${WORKSPACE}/*"

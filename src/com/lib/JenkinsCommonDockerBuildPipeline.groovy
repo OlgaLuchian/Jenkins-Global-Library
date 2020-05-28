@@ -114,7 +114,8 @@ def runPipeline() {
             gitCommitHash = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
           }
 
-          timestamps{ stage('Build docker image') {
+          timestamps{ 
+            stage('Build docker image') {
             dir("${WORKSPACE}/deployments/docker") {
               // Build the docker image
               dockerImage = docker.build(repositoryName, "--build-arg branch_name=${branch} .")
@@ -122,7 +123,8 @@ def runPipeline() {
           }
           }
 
-          timestamps{ stage('Push image') {
+          timestamps{ 
+            stage('Push image') {
 
 
             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "nexus-docker-creds", usernameVariable: 'docker_username', passwordVariable: 'docker_password']]) {
@@ -148,7 +150,8 @@ def runPipeline() {
           
 
 
-          timestamps{ stage("Clean up") {
+          timestamps{ 
+            stage("Clean up") {
             sh "docker rmi --no-prune docker.fuchicorp.com/${repositoryName}:${gitCommitHash}"
 
             if (params.PUSH_LATEST) {
@@ -157,7 +160,8 @@ def runPipeline() {
           }
           }
 
-          timestamps{ stage("Trigger Deploy") {
+          timestamps{
+             stage("Trigger Deploy") {
             build job: "${deployJobName}", 
             parameters: [
                 [$class: 'BooleanParameterValue', name: 'terraform_apply', value: true],

@@ -148,7 +148,8 @@ def runPipeline() {
   podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: params.debugMode) {
       node(k8slabel) {
 
-        timestamps{ stage("Deployment Info") {
+        timestamps{ 
+          stage("Deployment Info") {
 
           // Colecting information to show on stage <Deployment Info>
           println(prettyPrint(toJson([
@@ -162,7 +163,8 @@ def runPipeline() {
 
         container('fuchicorptools') {
 
-          timestamps{ stage("Polling SCM") {
+          timestamps{ 
+            stage("Polling SCM") {
             checkout([$class: 'GitSCM', 
                        branches: [[name: branchName]], 
                        doGenerateSubmoduleConfigurations: false, 
@@ -171,7 +173,8 @@ def runPipeline() {
           }
           }
 
-          timestamps{ stage('Generate Configurations') {
+          timestamps{ 
+            stage('Generate Configurations') {
             sh """
               mkdir -p ${WORKSPACE}/deployments/terraform/
               cat  /etc/secrets/service-account/credentials.json > ${WORKSPACE}/deployments/terraform/fuchicorp-service-account.json
@@ -224,7 +227,8 @@ def runPipeline() {
               
           }
           }
-          timestamps{ stage('Terraform Apply/Plan') {
+          timestamps{ 
+            stage('Terraform Apply/Plan') {
             if (!params.terraform_destroy) {
               if (params.terraform_apply) {
 
@@ -250,7 +254,8 @@ def runPipeline() {
           }
           }
 
-          timestamps{ stage('Terraform Destroy') {
+          timestamps{ 
+            stage('Terraform Destroy') {
             if (!params.terraform_apply) {
               if (params.terraform_destroy) {
                 if ( environment != 'tools' ) {
