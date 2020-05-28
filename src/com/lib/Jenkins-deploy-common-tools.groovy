@@ -60,11 +60,12 @@ def slavePodTemplate = """
     podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate) {
       node(k8slabel) {
         
-     stage("Pull SCM") {
+     timestamps{ stage("Pull SCM") {
           git 'https://github.com/fuchicorp/common_tools.git'
         }
+     }
 
-        stage('Generate Configurations') {
+        timestamps{ stage('Generate Configurations') {
           container('fuchicorptools') {
              withCredentials([
                 file(credentialsId: 'common-tools', variable: 'common_tools_conf'),
@@ -82,7 +83,8 @@ def slavePodTemplate = """
         }
 
         }
-        stage("Apply/Plan")  {
+        }
+        timestamps{ stage("Apply/Plan")  {
           container('fuchicorptools') {
               withCredentials([
                 file(credentialsId: 'common-tools', variable: 'common_tools_conf'),
@@ -99,6 +101,7 @@ def slavePodTemplate = """
               }
             
           }
+        }
         }
     }
   }
