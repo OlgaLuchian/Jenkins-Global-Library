@@ -112,8 +112,7 @@ def runPipeline() {
                 """
               }
 
-            timestamps{ 
-              stage('Generate Vars') {
+            timestamps{ stage('Generate Vars') {
               def file = new File("${WORKSPACE}/deployment/terraform/deployment_configuration.tfvars")
               file.write """
               deployment_environment    =  "${environment}"
@@ -125,8 +124,7 @@ def runPipeline() {
             }
             }
 
-            timestamps{ 
-              stage('Terraform Apply/Plan') {
+            timestamps{ stage('Terraform Apply/Plan') {
               if (!params.terraformDestroy) {
                 if (params.terraformApply) {
 
@@ -170,8 +168,7 @@ def runPipeline() {
             }
             }
 
-            timestamps{ 
-              stage('Terraform Destroy') {
+            timestamps{ stage('Terraform Destroy') {
               if (!params.terraformApply) {
                 if (params.terraformDestroy) {
                   if ( branch.toLowerCase() != "prod" ) {
