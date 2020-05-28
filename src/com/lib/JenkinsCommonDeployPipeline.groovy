@@ -14,6 +14,7 @@ def runPipeline() {
   def gitUrl          = "${scm.getUserRemoteConfigs()[0].getUrl()}"
   def k8slabel        = "jenkins-pipeline-${UUID.randomUUID().toString()}"
   def allEnvironments = ['dev', 'qa', 'test', 'prod']
+  def timeStamp = Calendar.getInstance().getTime().format('ssmmhh-ddMMYYY',TimeZone.getTimeZone('CST'))
   def findDockerImageScript = '''
     import groovy.json.JsonSlurper
     def findDockerImages(branchName) {
@@ -147,7 +148,7 @@ def runPipeline() {
   podTemplate(name: k8slabel, label: k8slabel, yaml: slavePodTemplate, showRawYaml: params.debugMode) {
       node(k8slabel) {
 
-        stage("Deployment Info") {
+        timestamps{ stage("Deployment Info") {
 
           // Colecting information to show on stage <Deployment Info>
           println(prettyPrint(toJson([
@@ -157,18 +158,20 @@ def runPipeline() {
             "Build": env.BUILD_NUMBER
           ])))
         }
+        }
 
         container('fuchicorptools') {
 
-          stage("Polling SCM") {
+          timestamps{ stage("Polling SCM") {
             checkout([$class: 'GitSCM', 
                        branches: [[name: branchName]], 
                        doGenerateSubmoduleConfigurations: false, 
                        extensions: [], submoduleCfg: [], 
                        userRemoteConfigs: [[url: gitUrl]]])
           }
+          }
 
-          stage('Generate Configurations') {
+          timestamps{ stage('Generate Configurations') {
             sh """
               mkdir -p ${WORKSPACE}/deployments/terraform/
               cat  /etc/secrets/service-account/credentials.json > ${WORKSPACE}/deployments/terraform/fuchicorp-service-account.json
@@ -220,7 +223,8 @@ def runPipeline() {
             }
               
           }
-          stage('Terraform Apply/Plan') {
+          }
+          timestamps{ stage('Terraform Apply/Plan') {
             if (!params.terraform_destroy) {
               if (params.terraform_apply) {
 
@@ -244,8 +248,9 @@ def runPipeline() {
               }
             }
           }
+          }
 
-          stage('Terraform Destroy') {
+          timestamps{ stage('Terraform Destroy') {
             if (!params.terraform_apply) {
               if (params.terraform_destroy) {
                 if ( environment != 'tools' ) {
@@ -278,6 +283,7 @@ def runPipeline() {
             }
           }
         }
+          }
        }
       }
     }
