@@ -3,7 +3,6 @@
 <img src="https://github.com/fuchicorp/jenkins-global-library/blob/master/docs/pictures/automotive.png"  width="250"  />
 
 # Project Jenkins Global Library
-#FuchiCorp
 
 
 This page is contains how to use Jenkins Global Library.  You will need to configure the Jenkins Shared library on your Jenkins to be able to use this library.  Use following link to be able to configure [Jenkins Global Library](https://jenkins.io/doc/book/pipeline/shared-libraries/). On FuchiCorp Jenkins it's already configured by this script  [link](https://github.com/fuchicorp/common_tools/blob/2f0639c77c83b8b7b812434ee2681bf0bbd3f8be/charts/jenkins/values.yaml#L246) 
